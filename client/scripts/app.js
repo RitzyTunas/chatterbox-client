@@ -17,6 +17,7 @@ app.fetch = function() {
         order: '-createdAt'
       },
       success: function(data) {
+        app.clearMessages();
         for (var i=0; i<data.results.length; i++) {
           var message = data.results[i];
           app.addMessage(message);
@@ -35,18 +36,17 @@ app.send = function(message) {
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
-      success: function (data) {
-        console.log('chatterbox: Message sent');
+      success: function () {
+        app.refresh();
       },
-      error: function (data) {
-        // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+      error: function () {
         console.error('chatterbox: Failed to send message');
       }
     });
-};
+  };
 
 app.addMessage = function(message) {
-  var username = JSON.stringify(message.username);
+  var username = message.username;
   var text = message.text;
   var roomname = message.roomname;
   var createdat = message.createdAt;
@@ -56,13 +56,14 @@ app.addMessage = function(message) {
 
 app.clearMessages = function() {
   $('#chats').empty();
-  app.fetch();
-  app.addMessage();
 };
 
-app.fetch();
+app.refresh = function() {
+  app.fetch();
+};
 
 $('document').ready(function() {
+  app.fetch();
   $('#sendchat').click(function(){
     var message = {
       username: (window.location.search).split("").slice(10).join(""),
@@ -71,21 +72,11 @@ $('document').ready(function() {
     };
     app.send(message);
     $('#chat').val('');
-    app.clearMessages();
+  });
 
+  $('#refresh').click(function(event){
+    event.preventDefault();
+    app.refresh();
   });
 });
-
-
-// console.log($('button'));
-// $('button').click(function() {
-//   //event.preventDefault();
-//   // var message = {
-//   //   username: (window.location.search).split("").slice(10).join(""),
-//   //   text: $('#chat').val(),
-//   //   roomname: 'space!'
-//   // };
-//   // app.send(message);
-//   alert("!!!!");
-// });
 
