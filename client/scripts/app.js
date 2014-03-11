@@ -63,10 +63,11 @@ app.refresh = function() {
 };
 
 $('document').ready(function() {
+  var username = username || (window.location.search).split("").slice(10).join("");
   app.fetch();
   $('#sendchat').click(function(){
     var message = {
-      username: (window.location.search).split("").slice(10).join(""),
+      username: username,
       text: $('#chat').val(),
       roomname: 'space!'
     };
@@ -77,6 +78,11 @@ $('document').ready(function() {
   $('#refresh').click(function(event){
     event.preventDefault();
     app.refresh();
+  });
+
+  $('#setname').click(function(event){
+    event.preventDefault();
+    username = $('#name').val();
   });
 });
 
