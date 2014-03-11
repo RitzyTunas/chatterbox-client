@@ -69,7 +69,7 @@ app.getUsers = function(obj) {
   for (var key in obj) {
     console.log('HERE');
     console.dir(key);
-    $('<option></option>').text(key).appendTo('#users');
+    $('<option></option>').text(key).appendTo('#users').val(key);
   }
 };
 
