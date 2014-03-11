@@ -51,23 +51,41 @@ app.addMessage = function(message) {
   var roomname = message.roomname;
   var createdat = message.createdAt;
   var updatedat = message.updatedAt;
-  $('<li></li>').text(text).appendTo('#chats');
+  $('<li></li>').text(username + ': '+ text).appendTo('#chats');
 };
 
 app.clearMessages = function() {
   $('#chats').empty();
+  app.fetch();
+  app.addMessage();
 };
 
-var message = {
-  username: 'ET',
-  text: 'PEANUT BUTTER JELLY FISH',
-  roomname: 'space!'
-};
-app.send(message);
 app.fetch();
 
-$('#sendchat').click(function(event) {
-  event.preventDefault();
-  app.send($('#chat').val());
+$('document').ready(function() {
+  $('#sendchat').click(function(){
+    var message = {
+      username: (window.location.search).split("").slice(10).join(""),
+      text: $('#chat').val(),
+      roomname: 'space!'
+    };
+    app.send(message);
+    $('#chat').val('');
+    app.clearMessages();
+
+  });
 });
+
+
+// console.log($('button'));
+// $('button').click(function() {
+//   //event.preventDefault();
+//   // var message = {
+//   //   username: (window.location.search).split("").slice(10).join(""),
+//   //   text: $('#chat').val(),
+//   //   roomname: 'space!'
+//   // };
+//   // app.send(message);
+//   alert("!!!!");
+// });
 
