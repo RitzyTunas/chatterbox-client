@@ -12,6 +12,10 @@ app.fetch = function() {
       url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'GET',
       dataType: 'json',
+      data: {
+        limit: 10,
+        order: '-createdAt'
+      },
       success: function(data) {
         for (var i=0; i<data.results.length; i++) {
           var message = data.results[i];
@@ -42,12 +46,12 @@ app.send = function(message) {
 };
 
 app.addMessage = function(message) {
-  var username = message.username;
+  var username = JSON.stringify(message.username);
   var text = message.text;
   var roomname = message.roomname;
   var createdat = message.createdAt;
   var updatedat = message.updatedAt;
-  $('#chats').append('<li>' + username + ': ' + text + ' ' + roomname + ' ' + createdat  + ' ' + updatedat + '</li>');
+  $('<li></li>').text(text).appendTo('#chats');
 };
 
 app.clearMessages = function() {
@@ -55,10 +59,15 @@ app.clearMessages = function() {
 };
 
 var message = {
-  'username': 'shawndrost',
-  'text': 'jellyfish',
-  'roomname': '4chan'
+  username: 'ET',
+  text: 'PEANUT BUTTER JELLY FISH',
+  roomname: 'space!'
 };
 app.send(message);
 app.fetch();
+
+$('#sendchat').click(function(event) {
+  event.preventDefault();
+  app.send($('#chat').val());
+});
 
