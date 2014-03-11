@@ -90,3 +90,9 @@ form input[type=text] {
 #chat {
   width: 150px;
 }
+
+li {
+  /*text-wrap: restricted;*/
+  word-wrap: break-word;
+  list-style-type: none;
+}

@@ -1,32 +1,41 @@
 // YOUR CODE HERE:
 var app = {};
 
+app.users = {};
+app.rooms = {};
+
 app.server = 'https://api.parse.com/1/classes/chatterbox';
 
 app.init = function() {
 
 };
 
-app.fetch = function() {
+app.fetch = function(callback) {
   $.ajax({
       url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'GET',
       dataType: 'json',
       data: {
-        limit: 10,
+        //limit: 10,
         order: '-createdAt'
       },
       success: function(data) {
         app.clearMessages();
-        for (var i=0; i<data.results.length; i++) {
+        for (var i=0; i<11; i++) {
           var message = data.results[i];
           app.addMessage(message);
         }
+        for (var j=0; j<data.results.length; j++) {
+          var message = data.results[j];
+          app.users[message.username] = true;
+          app.rooms[message.roomname] = true;
+        }
+        callback(app.users);
       },
       error: function () {
         console.error('chatterbox: Failed to get messages');
       }
-  });
+    });
 };
 
 app.send = function(message) {
@@ -51,7 +60,17 @@ app.addMessage = function(message) {
   var roomname = message.roomname;
   var createdat = message.createdAt;
   var updatedat = message.updatedAt;
-  $('<li></li>').text(username + ': '+ text).appendTo('#chats');
+  $('<li></li>').text(username + ': '+ text + ' ' + roomname).appendTo('#chats');
+};
+
+app.getUsers = function(obj) {
+  console.log(app.users);
+  console.log(obj);
+  for (var key in obj) {
+    console.log('HERE');
+    console.dir(key);
+    $('<option></option>').text(key).appendTo('#users');
+  }
 };
 
 app.clearMessages = function() {
@@ -63,8 +82,8 @@ app.refresh = function() {
 };
 
 $('document').ready(function() {
-  var username = username || (window.location.search).split("").slice(10).join("");
-  app.fetch();
+  var username = username || (window.location.search).split('').slice(10).join('');
+  app.fetch(app.getUsers);
   $('#sendchat').click(function(){
     var message = {
       username: username,
@@ -84,5 +103,7 @@ $('document').ready(function() {
     event.preventDefault();
     username = $('#name').val();
   });
+  // app.getUsers(app.users);
 });
+
 
