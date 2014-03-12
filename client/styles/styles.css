@@ -96,3 +96,7 @@ li {
   word-wrap: break-word;
   list-style-type: none;
 }
+
+.friend {
+  text-decoration: bold;
+}

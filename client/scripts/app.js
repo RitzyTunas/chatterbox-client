@@ -1,14 +1,11 @@
 // YOUR CODE HERE:
+/* global $ */
 var app = {};
 
 app.users = {};
 app.rooms = {};
-
-app.server = 'https://api.parse.com/1/classes/chatterbox';
-
-app.init = function() {
-
-};
+app.friends = {};
+var testData;
 
 app.fetch = function(callback) {
   $.ajax({
@@ -20,6 +17,7 @@ app.fetch = function(callback) {
         order: '-createdAt'
       },
       success: function(data) {
+        testData = data.results;
         app.clearMessages();
         for (var i=0; i<11; i++) {
           var message = data.results[i];
@@ -30,7 +28,8 @@ app.fetch = function(callback) {
           app.users[message.username] = true;
           app.rooms[message.roomname] = true;
         }
-        callback(app.users);
+        callback(app.users, app.rooms, data.results);
+        $('#rooms li').click(function(){app.showRooms(testData, $(this).attr('class'));});
       },
       error: function () {
         console.error('chatterbox: Failed to get messages');
@@ -40,7 +39,6 @@ app.fetch = function(callback) {
 
 app.send = function(message) {
     $.ajax({
-      // always use this url
       url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'POST',
       data: JSON.stringify(message),
@@ -58,52 +56,90 @@ app.addMessage = function(message) {
   var username = message.username;
   var text = message.text;
   var roomname = message.roomname;
-  var createdat = message.createdAt;
-  var updatedat = message.updatedAt;
-  $('<li></li>').text(username + ': '+ text + ' ' + roomname).appendTo('#chats');
-};
-
-app.getUsers = function(obj) {
-  console.log(app.users);
-  console.log(obj);
-  for (var key in obj) {
-    console.log('HERE');
-    console.dir(key);
-    $('<option></option>').text(key).appendTo('#users').val(key);
+  for (var key in app.friends) {
+    if (key === username) {
+    }
   }
+  $('<li></li>').text(username + ': '+ text + ' ' + roomname).appendTo('#chats');
+  $('#chats li').data('roomname', roomname);
 };
 
+// clear all chats
 app.clearMessages = function() {
   $('#chats').empty();
 };
 
+// get new chats
 app.refresh = function() {
-  app.fetch();
+  app.fetch(function(){
+
+  });
 };
 
-$('document').ready(function() {
-  var username = username || (window.location.search).split('').slice(10).join('');
-  app.fetch(app.getUsers);
-  $('#sendchat').click(function(){
-    var message = {
-      username: username,
-      text: $('#chat').val(),
-      roomname: 'space!'
+
+
+
+app.init = function(obj3,obj4, obj5) {
+  $('document').ready(function() {
+    app.setLists = function(obj1, obj2, data) {
+      for (var key in obj1) {
+        $('<option></option>').text(key).appendTo('#users').val(key);
+      }
+      for (var key in obj2) {
+        $('<li></li>').text(key).appendTo('#rooms').addClass(key);
+      }
     };
-    app.send(message);
-    $('#chat').val('');
-  });
 
-  $('#refresh').click(function(event){
-    event.preventDefault();
-    app.refresh();
-  });
+    app.setLists(obj3,obj4, obj5);
 
-  $('#setname').click(function(event){
-    event.preventDefault();
-    username = $('#name').val();
-  });
-  // app.getUsers(app.users);
-});
+    var username = username || (window.location.search).split('').slice(10).join('');
+    $('#usernamedisplay').text(username);
+    $('#sendchat').click(function(){
+      var message = {
+        username: username,
+        text: $('#chat').val(),
+        roomname: 'space!!!!!'
+      };
+      app.send(message);
+      $('#chat').val('');
+    });
 
+    $('#refresh').click(function(event){
+      event.preventDefault();
+      app.refresh();
+    });
+
+    // set username
+    $('#setname').click(function(event){
+      event.preventDefault();
+      username = $('#name').val();
+      $('#name').val('');
+      $('#usernamedisplay').text(username);
+    });
+
+    //change selected user on dropdown
+    $('#users').change(function(event){
+      event.preventDefault();
+      $('#users option').removeClass('selected');
+      $('#users option[value=' + $('#users').val() + ']').toggleClass('selected');
+      $('#addFriend').click(function() {
+        app.friends[$('.selected').val()] = true;
+      });
+    });
+
+
+  });
+};
+app.showRooms = function(data, roomClass){
+  //console.log(app.data);
+
+  app.clearMessages();
+  for (var i = 0; i < data.length; i++) {
+      if (roomClass === data[i].roomname) {
+        app.addMessage(data[i]);
+      }
+  }
+};
+
+app.fetch(app.init);
 

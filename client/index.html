@@ -14,10 +14,13 @@
   </head>
   <body>
     <div id="main">
+       <label>User:</label><h2 id="usernamedisplay"></h2>
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
       <select id="users">
+        <option class="selected">Select User</option>
       </select>
+      <input type="button" id="addFriend" value="FRIEND">
       <ul id="chats"></ul>
     </div>
     <div>
@@ -27,5 +30,6 @@
       <input type="button" id="sendchat" value="SEND">
       <input type="button" id="refresh" value="REFRESH">
     </div>
+    <ul id="rooms"></ul>
   </body>
 </html>
